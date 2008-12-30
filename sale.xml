@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!-- This file is part of Tryton.  The COPYRIGHT file at the top level of
+this repository contains the full copyright notices and license terms. -->
+<tryton>
+    <data>
+        <record model="ir.ui.view" id="bls_account_invoice_discount_view">
+            <field name="model">sale.sale</field>
+			<field name="inherit" ref="sale.sale_view_form"/>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <data>
+                    <xpath
+                        expr="/form/notebook/page/field/tree/field[@name=&quot;amount&quot;]"
+                        position="before">
+                        <field name="discount"/>
+                    </xpath>
+                </data>
+                ]]>
+            </field>
+        </record>
+		<record model="ir.ui.view" id="bls_account_invoice_line_discount_view">
+            <field name="model">sale.line</field>
+			<field name="inherit" ref="sale.sale_line_view_form"/>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <data>
+                    <xpath
+                        expr="/form/field[@name=&quot;unit&quot;]"
+                        position="after">
+					    <label name="Discount"/>
+                        <field name="discount"/>
+					    <newline/>
+                    </xpath>
+                </data>
+                ]]>
+            </field>
+        </record>
+		<record model="ir.action.report" id="sale.report_sale">
+            <field name="name">Sale</field> 
+            <field name="report_name">sale.sale</field>
+            <field name="model">sale.sale</field>
+            <field name="report">bls_sale_discount/sale.odt</field>
+            <field name="style">company/header_A4.odt</field>
+        </record>
+    </data>
+</tryton>
