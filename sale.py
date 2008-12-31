@@ -68,4 +68,57 @@ class SaleLine(OSV):
                 res[line.id] = Decimal('0.0')
         return res
     
+    def get_invoice_line(self, cursor, user, line, context=None):
+        '''
+        Return invoice line values for sale line
+
+        :param cursor: the database cursor
+        :param user: the user id
+        :param line: the BrowseRecord of the line
+        :param context: the context
+
+        :return: a list of invoice line values
+        '''
+        uom_obj = self.pool.get('product.uom')
+        property_obj = self.pool.get('ir.property')
+
+        res = {}
+        res['sequence'] = line.sequence
+        res['type'] = line.type
+        res['description'] = line.description
+        if line.type != 'line':
+            return [res]
+        if line.sale.invoice_method == 'order':
+            res['quantity'] = line.quantity
+        else:
+            quantity = 0.0
+            for move in line.moves:
+                if move.state == 'done':
+                    quantity += uom_obj.compute_qty(cursor, user, move.uom,
+                            move.quantity, line.unit, context=context)
+            for invoice_line in line.invoice_lines:
+                quantity -= uom_obj.compute_qty(cursor, user,
+                        invoice_line.unit, invoice_line.quantity, line.unit,
+                        context=context)
+            res['quantity'] = quantity
+        if res['quantity'] <= 0.0:
+            return None
+        res['unit'] = line.unit.id
+        res['product'] = line.product.id
+        res['unit_price'] = line.unit_price
+        res['discount'] = line.discount
+        res['taxes'] = [('set', [x.id for x in line.taxes])]
+        if line.product:
+            res['account'] = line.product.account_revenue_used.id
+        else:
+            for model in ('product.template', 'product.category'):
+                res['account'] = property_obj.get(cursor, user,
+                        'account_revenue', model, context=context)
+                if res['account']:
+                    break
+            if not res['account']:
+                self.raise_user_error(cursor, 'missing_account_revenue',
+                        context=context)
+        return [res]
+    
 SaleLine()
