@@ -27,7 +27,7 @@ this repository contains the full copyright notices and license terms. -->
                     <xpath
                         expr="/form/field[@name=&quot;unit&quot;]"
                         position="after">
-					    <label name="Discount"/>
+					    <label name="discount"/>
                         <field name="discount"/>
 					    <newline/>
                     </xpath>
