@@ -122,3 +122,85 @@ class SaleLine(OSV):
         return [res]
     
 SaleLine()
+
+class Sale(OSV):
+    'Sale'
+    _name = 'sale.sale'
+    
+    def on_change_lines(self, cursor, user, ids, vals, context=None):
+        currency_obj = self.pool.get('currency.currency')
+        tax_obj = self.pool.get('account.tax')
+
+        if context is None:
+            context = {}
+
+        res = {
+            'untaxed_amount': Decimal('0.0'),
+            'tax_amount': Decimal('0.0'),
+            'total_amount': Decimal('0.0'),
+        }
+
+        currency = None
+        if vals.get('currency'):
+            currency = currency_obj.browse(cursor, user, vals['currency'],
+                    context=context)
+
+        if vals.get('lines'):
+            ctx = context.copy()
+            ctx.update(self.get_tax_context(cursor, user, vals,
+                context=context))
+            for line in vals['lines']:
+                if line.get('type', 'line') != 'line':
+                    continue
+                res['untaxed_amount'] += line.get('amount', Decimal('0.0'))
+                price = line.get('unit_price') - line.get('unit_price') * line.get('discount') / Decimal('100')
+                for tax in tax_obj.compute(cursor, user, line.get('taxes', []),
+                        price,
+                        line.get('quantity', 0.0), context=context):
+                    res['tax_amount'] += tax['amount']
+        if currency:
+            res['untaxed_amount'] = currency_obj.round(cursor, user, currency,
+                    res['untaxed_amount'])
+            res['tax_amount'] = currency_obj.round(cursor, user, currency,
+                    res['tax_amount'])
+        res['total_amount'] = res['untaxed_amount'] + res['tax_amount']
+        if currency:
+            res['total_amount'] = currency_obj.round(cursor, user, currency,
+                    res['total_amount'])
+        return res
+    
+    def get_tax_amount(self, cursor, user, sales, context=None):
+        '''
+        Compute tax amount for each sales
+
+        :param cursor: the database cursor
+        :param user: the user id
+        :param sales: a BrowseRecordList of sales
+        :param context: the context
+        :return: a dictionary with sale id as key and
+            tax amount as value
+        '''
+        currency_obj = self.pool.get('currency.currency')
+        tax_obj = self.pool.get('account.tax')
+        if context is None:
+            context = {}
+        res = {}
+        for sale in sales:
+            ctx = context.copy()
+            ctx.update(self.get_tax_context(cursor, user, sale,
+                context=context))
+            res.setdefault(sale.id, Decimal('0.0'))
+            for line in sale.lines:
+                if line.type != 'line':
+                    continue
+                price = line.unit_price - line.unit_price * line.discount / Decimal('100')
+                # Don't round on each line to handle rounding error
+                for tax in tax_obj.compute(cursor, user,
+                        [t.id for t in line.taxes], price,
+                        line.quantity, context=ctx):
+                    res[sale.id] += tax['amount']
+            res[sale.id] = currency_obj.round(cursor, user, sale.currency,
+                    res[sale.id])
+        return res
+
+Sale()
