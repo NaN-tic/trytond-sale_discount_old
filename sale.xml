@@ -5,7 +5,7 @@ this repository contains the full copyright notices and license terms. -->
     <data>
         <record model="ir.ui.view" id="bls_account_invoice_discount_view">
             <field name="model">sale.sale</field>
-			<field name="inherit" ref="sale.sale_view_form"/>
+      <field name="inherit" ref="sale.sale_view_form"/>
             <field name="arch" type="xml">
                 <![CDATA[
                 <data>
@@ -18,25 +18,25 @@ this repository contains the full copyright notices and license terms. -->
                 ]]>
             </field>
         </record>
-		<record model="ir.ui.view" id="bls_account_invoice_line_discount_view">
+    <record model="ir.ui.view" id="bls_account_invoice_line_discount_view">
             <field name="model">sale.line</field>
-			<field name="inherit" ref="sale.sale_line_view_form"/>
+      <field name="inherit" ref="sale.sale_line_view_form"/>
             <field name="arch" type="xml">
                 <![CDATA[
                 <data>
                     <xpath
                         expr="/form/label[@name=&quot;unit&quot;]"
                         position="before">
-					    <newline/>
-					    <label name="discount"/>
+              <newline/>
+              <label name="discount"/>
                         <field name="discount"/>
                     </xpath>
                 </data>
                 ]]>
             </field>
         </record>
-		<record model="ir.action.report" id="sale.report_sale">
-            <field name="name">Sale</field> 
+    <record model="ir.action.report" id="sale.report_sale">
+            <field name="name">Sale</field>
             <field name="report_name">sale.sale</field>
             <field name="model">sale.sale</field>
             <field name="report">sale_discount/sale.odt</field>

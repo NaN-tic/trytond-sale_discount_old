@@ -7,7 +7,7 @@ class SaleLine(OSV):
     'Sale Line'
     _name = 'sale.line'
     _description = __doc__
-    
+
     discount = fields.Numeric('Discount %', digits=(16, 2),
                               states={
                                   'invisible': "type != 'line'",
@@ -19,10 +19,10 @@ class SaleLine(OSV):
                 'readonly': "not globals().get('_parent_sale')",
             }, on_change_with=['type', 'quantity', 'unit_price',
                 '_parent_sale.currency','discount'])
-    
+
     def default_discount(self, cursor, user, context=None):
         return 0.0
-    
+
     def on_change_with_amount(self, cursor, user, ids, vals, context=None):
         currency_obj = self.pool.get('currency.currency')
         if vals.get('type') == 'line':
@@ -41,7 +41,7 @@ class SaleLine(OSV):
                 return currency_obj.round(cursor, user, currency, amount)
             return amount
         return Decimal('0.0')
-    
+
     def get_amount(self, cursor, user, ids, name, arg, context=None):
         currency_obj = self.pool.get('currency.currency')
         res = {}
@@ -70,7 +70,7 @@ class SaleLine(OSV):
             else:
                 res[line.id] = Decimal('0.0')
         return res
-    
+
     def get_invoice_line(self, cursor, user, line, context=None):
         '''
         Return invoice line values for sale line
@@ -123,13 +123,13 @@ class SaleLine(OSV):
                 self.raise_user_error(cursor, 'missing_account_revenue',
                         context=context)
         return [res]
-    
+
 SaleLine()
 
 class Sale(OSV):
     'Sale'
     _name = 'sale.sale'
-    
+
     def on_change_lines(self, cursor, user, ids, vals, context=None):
         currency_obj = self.pool.get('currency.currency')
         tax_obj = self.pool.get('account.tax')
@@ -171,7 +171,7 @@ class Sale(OSV):
             res['total_amount'] = currency_obj.round(cursor, user, currency,
                     res['total_amount'])
         return res
-    
+
     def get_tax_amount(self, cursor, user, sales, context=None):
         '''
         Compute tax amount for each sales
