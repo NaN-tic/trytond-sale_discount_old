@@ -1,2 +1,3 @@
 type,name,res_id,src,value,fuzzy
 field,"sale.line,discount",0,Discount %,Rabatt %,0
+selection,"sale.line,type",0,Comment,Kommentar,0
