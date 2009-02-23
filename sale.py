@@ -33,8 +33,8 @@ class SaleLine(OSV):
                 currency = vals['_parent_sale.currency']
             discount = Decimal(str(vals.get('quantity') or Decimal('0.0'))) * \
                          (vals.get('unit_price') or Decimal('0.0')) * \
-                         (((vals.get('discount')* Decimal('0.01'))) or \
-                          Decimal('0.0'))
+                         (((Decimal(vals.get('discount') or '0.0') * \
+                         Decimal('0.01'))) or Decimal('0.0'))
             amount = Decimal(str(vals.get('quantity') or '0.0')) * \
                     (vals.get('unit_price') or Decimal('0.0')) - discount
             if currency:
