@@ -1,9 +1,9 @@
 #This file is part of Tryton.  The COPYRIGHT file at the top level of
 #this repository contains the full copyright notices and license terms.
-from trytond.osv import fields, OSV
+from trytond.model import ModelView, ModelSQL, fields
 from decimal import Decimal
 
-class SaleLine(OSV):
+class SaleLine(ModelSQL, ModelView):
     'Sale Line'
     _name = 'sale.line'
     _description = __doc__
@@ -126,7 +126,7 @@ class SaleLine(OSV):
 
 SaleLine()
 
-class Sale(OSV):
+class Sale(ModelSQL, ModelView):
     'Sale'
     _name = 'sale.sale'
 
