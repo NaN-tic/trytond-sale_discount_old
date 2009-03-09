@@ -55,10 +55,10 @@ class SaleLine(ModelSQL, ModelView):
                             (line.discount * Decimal('0.01'))))
             elif line.type == 'subtotal':
                 res[line.id] = Decimal('0.0')
-                for line2 in line.invoice.lines:
+                for line2 in line.sale.lines:
                     if line2.type == 'line':
                         res[line.id] += currency_obj.round(cursor, user, \
-                            line2.invoice.currency, \
+                            line2.sale.currency, \
                             Decimal(str(line2.quantity)) * line2.unit_price - \
                             (Decimal(str(line2.quantity)) * line2.unit_price *\
                             (line2.discount * Decimal('0.01'))))
