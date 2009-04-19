@@ -24,27 +24,17 @@ class SaleLine(ModelSQL, ModelView):
         return 0.0
 
     def on_change_with_amount(self, cursor, user, ids, vals, context=None):
-        currency_obj = self.pool.get('currency.currency')
-        if vals.get('type') == 'line':
-            if isinstance(vals.get('_parent_sale.currency'), (int, long)):
-                currency = currency_obj.browse(cursor, user,
-                        vals['_parent_sale.currency'], context=context)
-            else:
-                currency = vals['_parent_sale.currency']
-            discount = Decimal(str(vals.get('quantity') or Decimal('0.0'))) * \
-                         (vals.get('unit_price') or Decimal('0.0')) * \
-                         (((Decimal(vals.get('discount') or '0.0') * \
-                         Decimal('0.01'))) or Decimal('0.0'))
-            amount = Decimal(str(vals.get('quantity') or '0.0')) * \
-                    (vals.get('unit_price') or Decimal('0.0')) - discount
-            if currency:
-                return currency_obj.round(cursor, user, currency, amount)
-            return amount
-        return Decimal('0.0')
+        if vals.get('type') == 'line' and vals.get('discount'):
+            vals = vals.copy()
+            vals['unit_price'] = (vals.get('unit_price') -
+                vals.get('unit_price') * vals.get('discount') * Decimal('0.01'))
+        return super(SaleLine, self).on_change_with_amount(cursor, user,
+                                                ids, vals, context=context)
 
     def get_amount(self, cursor, user, ids, name, arg, context=None):
         currency_obj = self.pool.get('currency.currency')
-        res = {}
+        res = super(SaleLine, self).get_amount(cursor, user, ids, name, arg,
+                                                  context=context)
         for line in self.browse(cursor, user, ids, context=context):
             if line.type == 'line':
                 currency = line.sale and line.sale.currency \
@@ -53,75 +43,17 @@ class SaleLine(ModelSQL, ModelView):
                         Decimal(str(line.quantity)) * line.unit_price - \
                             (Decimal(str(line.quantity)) * line.unit_price *\
                             (line.discount * Decimal('0.01'))))
-            elif line.type == 'subtotal':
-                res[line.id] = Decimal('0.0')
-                for line2 in line.sale.lines:
-                    if line2.type == 'line':
-                        res[line.id] += currency_obj.round(cursor, user, \
-                            line2.sale.currency, \
-                            Decimal(str(line2.quantity)) * line2.unit_price - \
-                            (Decimal(str(line2.quantity)) * line2.unit_price *\
-                            (line2.discount * Decimal('0.01'))))
-                        print res[line.id]
-                    elif line2.type == 'subtotal':
-                        if line.id == line2.id:
-                            break
-                        res[line.id] = Decimal('0.0')
-            else:
-                res[line.id] = Decimal('0.0')
         return res
 
     def get_invoice_line(self, cursor, user, line, context=None):
-        '''
-        Return invoice line values for sale line
-
-        :param cursor: the database cursor
-        :param user: the user id
-        :param line: the BrowseRecord of the line
-        :param context: the context
-
-        :return: a list of invoice line values
-        '''
-        uom_obj = self.pool.get('product.uom')
-        property_obj = self.pool.get('ir.property')
-
-        res = {}
-        res['sequence'] = line.sequence
-        res['type'] = line.type
-        res['description'] = line.description
+        res = super(SaleLine, self).get_invoice_line(cursor, user, line,
+                                                     context=context)[0]
         if line.type != 'line':
             return [res]
-        if line.sale.invoice_method == 'order':
-            res['quantity'] = line.quantity
-        else:
-            quantity = 0.0
-            for move in line.moves:
-                if move.state == 'done':
-                    quantity += uom_obj.compute_qty(cursor, user, move.uom,
-                            move.quantity, line.unit, context=context)
-            for invoice_line in line.invoice_lines:
-                quantity -= uom_obj.compute_qty(cursor, user,
-                        invoice_line.unit, invoice_line.quantity, line.unit,
-                        context=context)
-            res['quantity'] = quantity
         if res['quantity'] <= 0.0:
             return None
-        res['unit'] = line.unit.id
-        res['product'] = line.product.id
-        res['unit_price'] = line.unit_price
+
         res['discount'] = line.discount
-        res['taxes'] = [('set', [x.id for x in line.taxes])]
-        if line.product:
-            res['account'] = line.product.account_revenue_used.id
-        else:
-            for model in ('product.template', 'product.category'):
-                res['account'] = property_obj.get(cursor, user,
-                        'account_revenue', model, context=context)
-                if res['account']:
-                    break
-            if not res['account']:
-                self.raise_user_error(cursor, 'missing_account_revenue',
-                        context=context)
         return [res]
 
 SaleLine()
@@ -131,46 +63,18 @@ class Sale(ModelSQL, ModelView):
     _name = 'sale.sale'
 
     def on_change_lines(self, cursor, user, ids, vals, context=None):
-        currency_obj = self.pool.get('currency.currency')
-        tax_obj = self.pool.get('account.tax')
-
-        if context is None:
-            context = {}
-
-        res = {
-            'untaxed_amount': Decimal('0.0'),
-            'tax_amount': Decimal('0.0'),
-            'total_amount': Decimal('0.0'),
-        }
-
-        currency = None
-        if vals.get('currency'):
-            currency = currency_obj.browse(cursor, user, vals['currency'],
-                    context=context)
-
         if vals.get('lines'):
-            ctx = context.copy()
-            ctx.update(self.get_tax_context(cursor, user, vals,
-                context=context))
+            vals = vals.copy()
+            lines = []
             for line in vals['lines']:
-                if line.get('type', 'line') != 'line':
-                    continue
-                res['untaxed_amount'] += line.get('amount', Decimal('0.0'))
-                price = line.get('unit_price') - line.get('unit_price') * line.get('discount') / Decimal('100')
-                for tax in tax_obj.compute(cursor, user, line.get('taxes', []),
-                        price,
-                        line.get('quantity', 0.0), context=context):
-                    res['tax_amount'] += tax['amount']
-        if currency:
-            res['untaxed_amount'] = currency_obj.round(cursor, user, currency,
-                    res['untaxed_amount'])
-            res['tax_amount'] = currency_obj.round(cursor, user, currency,
-                    res['tax_amount'])
-        res['total_amount'] = res['untaxed_amount'] + res['tax_amount']
-        if currency:
-            res['total_amount'] = currency_obj.round(cursor, user, currency,
-                    res['total_amount'])
-        return res
+                if line.get('discount'):
+                    line['unit_price'] = (line.get('unit_price')-
+                              line.get('unit_price') * line.get('discount') *
+                              Decimal('0.01'))
+                lines.append(line)
+            vals['lines'] = lines
+        return super(Sale, self).on_change_lines(cursor, user, ids, vals,
+                                                 context=context)
 
     def get_tax_amount(self, cursor, user, sales, context=None):
         '''
