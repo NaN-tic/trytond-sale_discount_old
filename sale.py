@@ -7,7 +7,6 @@ import copy
 class SaleLine(ModelSQL, ModelView):
     'Sale Line'
     _name = 'sale.line'
-    _description = __doc__
 
     discount = fields.Numeric('Discount %', digits=(16, 2),
                               states={
