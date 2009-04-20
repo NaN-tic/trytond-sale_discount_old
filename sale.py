@@ -2,6 +2,7 @@
 #this repository contains the full copyright notices and license terms.
 from trytond.model import ModelView, ModelSQL, fields
 from decimal import Decimal
+import copy
 
 class SaleLine(ModelSQL, ModelView):
     'Sale Line'
@@ -12,13 +13,13 @@ class SaleLine(ModelSQL, ModelView):
                               states={
                                   'invisible': "type != 'line'",
                                       })
-    amount = fields.Function('get_amount', type='numeric', string='Amount',
-            digits="(16, _parent_sale.currency_digits)",
-            states={
-                'invisible': "type not in ('line', 'subtotal')",
-                'readonly': "not globals().get('_parent_sale')",
-            }, on_change_with=['type', 'quantity', 'unit_price',
-                '_parent_sale.currency','discount'])
+
+    def __init__(self):
+        super(SaleLine, self).__init__()
+        self.amount = copy.copy(self.amount)
+        if self.amount.on_change_with:
+            self.amount.on_change_with.extend(['discount'])
+        self._reset_columns()
 
     def default_discount(self, cursor, user, context=None):
         return 0.0
