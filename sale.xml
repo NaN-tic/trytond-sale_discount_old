@@ -3,9 +3,9 @@
 this repository contains the full copyright notices and license terms. -->
 <tryton>
     <data>
-        <record model="ir.ui.view" id="bls_account_invoice_discount_view">
+        <record model="ir.ui.view" id="sale_view_form">
             <field name="model">sale.sale</field>
-          <field name="inherit" ref="sale.sale_view_form"/>
+            <field name="inherit" ref="sale.sale_view_form"/>
             <field name="arch" type="xml">
                 <![CDATA[
                 <data>
@@ -18,9 +18,9 @@ this repository contains the full copyright notices and license terms. -->
                 ]]>
             </field>
         </record>
-      <record model="ir.ui.view" id="bls_account_invoice_line_discount_view">
+        <record model="ir.ui.view" id="sale_line_view_form">
             <field name="model">sale.line</field>
-        <field name="inherit" ref="sale.sale_line_view_form"/>
+            <field name="inherit" ref="sale.sale_line_view_form"/>
             <field name="arch" type="xml">
                 <![CDATA[
                 <data>
@@ -35,7 +35,7 @@ this repository contains the full copyright notices and license terms. -->
                 ]]>
             </field>
         </record>
-      <record model="ir.action.report" id="report_sale_discount">
+        <record model="ir.action.report" id="report_sale_discount">
             <field name="name">Sale</field>
             <field name="report_name">sale.sale</field>
             <field name="model">sale.sale</field>
