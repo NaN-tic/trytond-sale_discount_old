@@ -5,7 +5,6 @@ from decimal import Decimal
 import copy
 
 class SaleLine(ModelSQL, ModelView):
-    'Sale Line'
     _name = 'sale.line'
 
     discount = fields.Numeric('Discount %', digits=(16, 2),
@@ -59,7 +58,6 @@ class SaleLine(ModelSQL, ModelView):
 SaleLine()
 
 class Sale(ModelSQL, ModelView):
-    'Sale'
     _name = 'sale.sale'
 
     def on_change_lines(self, cursor, user, ids, vals, context=None):
