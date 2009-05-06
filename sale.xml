@@ -35,6 +35,9 @@ this repository contains the full copyright notices and license terms. -->
                 ]]>
             </field>
         </record>
+        <record model="ir.action.report" id="sale.report_sale">
+            <field name="active" eval="False"/>
+        </record>
         <record model="ir.action.report" id="report_sale_discount">
             <field name="name">Sale</field>
             <field name="report_name">sale.sale</field>
