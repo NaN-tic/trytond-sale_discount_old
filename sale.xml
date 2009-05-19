@@ -45,5 +45,10 @@ this repository contains the full copyright notices and license terms. -->
             <field name="report">sale_discount/sale.odt</field>
             <field name="style">company/header_A4.odt</field>
         </record>
+        <record model="ir.action.keyword" id="report_sale_keyword">
+            <field name="keyword">form_print</field>
+            <field name="model">sale.sale,0</field>
+            <field name="action" ref="report_sale_discount"/>
+        </record>
     </data>
 </tryton>
