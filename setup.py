@@ -56,6 +56,6 @@ setup(name='trytond_sale_discount',
     zip_safe=False,
     entry_points="""
     [trytond.modules]
-    account_statement = trytond.modules.sale_discount
+    sale_discount = trytond.modules.sale_discount
     """,
 )
