@@ -60,7 +60,7 @@ SaleLine()
 class Sale(ModelSQL, ModelView):
     _name = 'sale.sale'
 
-    def on_change_lines(self, cursor, user, ids, vals, context=None):
+    def on_change_lines(self, cursor, user, vals, context=None):
         if vals.get('lines'):
             vals = vals.copy()
             lines = []
@@ -71,7 +71,7 @@ class Sale(ModelSQL, ModelView):
                               Decimal('0.01'))
                 lines.append(line)
             vals['lines'] = lines
-        return super(Sale, self).on_change_lines(cursor, user, ids, vals,
+        return super(Sale, self).on_change_lines(cursor, user, vals,
                                                  context=context)
 
     def get_tax_amount(self, cursor, user, sales, context=None):
