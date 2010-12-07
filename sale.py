@@ -30,9 +30,9 @@ class SaleLine(ModelSQL, ModelView):
         return super(SaleLine, self).on_change_with_amount(cursor, user,
                                                 ids, vals, context=context)
 
-    def get_amount(self, cursor, user, ids, name, arg, context=None):
+    def get_amount(self, cursor, user, ids, name, context=None):
         currency_obj = self.pool.get('currency.currency')
-        res = super(SaleLine, self).get_amount(cursor, user, ids, name, arg,
+        res = super(SaleLine, self).get_amount(cursor, user, ids, name,
                                                   context=context)
         for line in self.browse(cursor, user, ids, context=context):
             if line.type == 'line':
