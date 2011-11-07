@@ -3,7 +3,7 @@
 {
     'name': 'Sale Discount',
     'name_de_DE': 'Verkauf Rabatt',
-    'version': '1.8.0',
+    'version': '1.9.0',
     'author': 'virtual things',
     'email': 'info@virtual-things.biz',
     'website': 'http://www.virtual-things.biz/',
