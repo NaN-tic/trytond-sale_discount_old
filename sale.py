@@ -6,6 +6,7 @@ from decimal import Decimal
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pyson import Not, Equal, Eval
 from trytond.transaction import Transaction
+from trytond.pool import Pool
 
 
 class SaleLine(ModelSQL, ModelView):
@@ -32,7 +33,7 @@ class SaleLine(ModelSQL, ModelView):
         return super(SaleLine, self).on_change_with_amount(vals)
 
     def get_amount(self, ids, name):
-        currency_obj = self.pool.get('currency.currency')
+        currency_obj = Pool().get('currency.currency')
         res = super(SaleLine, self).get_amount(ids, name)
         for line in self.browse(ids):
             if line.type == 'line':
@@ -80,8 +81,8 @@ class Sale(ModelSQL, ModelView):
         :return: a dictionary with sale id as key and
             tax amount as value
         '''
-        currency_obj = self.pool.get('currency.currency')
-        tax_obj = self.pool.get('account.tax')
+        currency_obj = Pool().get('currency.currency')
+        tax_obj = Pool().get('account.tax')
         res = {}
         for sale in sales:
             context = self.get_tax_context(sale)
