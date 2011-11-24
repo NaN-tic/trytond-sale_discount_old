@@ -12,7 +12,8 @@ class SaleLine(ModelSQL, ModelView):
     _name = 'sale.line'
 
     discount = fields.Numeric('Discount %', digits=(16, 2), states={
-                'invisible': Not(Equal(Eval('type'), 'line'))})
+                'invisible': Not(Equal(Eval('type'), 'line')),
+            }, depends=['type'])
 
     def __init__(self):
         super(SaleLine, self).__init__()
