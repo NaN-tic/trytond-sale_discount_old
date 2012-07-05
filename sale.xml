@@ -3,14 +3,29 @@
 this repository contains the full copyright notices and license terms. -->
 <tryton>
     <data>
-        <record model="ir.ui.view" id="sale_view_form">
-            <field name="model">sale.sale</field>
-            <field name="inherit" ref="sale.sale_view_form"/>
+        <record model="ir.ui.view" id="sale_line_view_tree">
+            <field name="model">sale.line</field>
+            <field name="inherit" ref="sale.sale_line_view_tree"/>
             <field name="arch" type="xml">
                 <![CDATA[
                 <data>
                     <xpath
-                        expr="/form/notebook/page/field/tree/field[@name=&quot;amount&quot;]"
+                        expr="/tree/field[@name=&quot;amount&quot;]"
+                        position="before">
+                        <field name="discount"/>
+                    </xpath>
+                </data>
+                ]]>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="sale_line_view_tree_sequence">
+            <field name="model">sale.line</field>
+            <field name="inherit" ref="sale.sale_line_view_tree_sequence"/>
+            <field name="arch" type="xml">
+                <![CDATA[
+                <data>
+                    <xpath
+                        expr="/tree/field[@name=&quot;amount&quot;]"
                         position="before">
                         <field name="discount"/>
                     </xpath>
