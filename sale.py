@@ -45,15 +45,16 @@ class SaleLine(ModelSQL, ModelView):
                             (line.discount * Decimal('0.01'))))
         return res
 
-    def get_invoice_line(self, line):
-        res = super(SaleLine, self).get_invoice_line(line)[0]
+    def get_invoice_line(self, line, invoice_type):
+        res = super(SaleLine, self).get_invoice_line(line, invoice_type)
+        if not res:
+            return []
         if line.type != 'line':
-            return [res]
-        if res['quantity'] <= 0.0:
+            return [res[0]]
+        if res[0]['quantity'] <= 0.0:
             return None
-
-        res['discount'] = line.discount
-        return [res]
+        res[0]['discount'] = line.discount
+        return [res[0]]
 
 SaleLine()
 
@@ -73,7 +74,7 @@ class Sale(ModelSQL, ModelView):
             vals['lines'] = lines
         return super(Sale, self).on_change_lines(vals)
 
-    def get_tax_amount(self, sales):
+    def get_tax_amount(self, ids, name):
         '''
         Compute tax amount for each sales
 
@@ -84,7 +85,7 @@ class Sale(ModelSQL, ModelView):
         currency_obj = Pool().get('currency.currency')
         tax_obj = Pool().get('account.tax')
         res = {}
-        for sale in sales:
+        for sale in self.browse(ids):
             context = self.get_tax_context(sale)
             res.setdefault(sale.id, Decimal('0.0'))
             for line in sale.lines:
