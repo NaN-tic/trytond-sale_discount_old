@@ -1,3 +1,4 @@
+* Add locale es_ES
 * Add locale ca_ES
 * Rewrite get_tax_amount in Sale and ge_invoice_line in SaleLine
 * Now Sale Line Tree view in Sale form view is sale_line_view_tree_sequence view

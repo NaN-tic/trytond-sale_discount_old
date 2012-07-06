@@ -4,6 +4,7 @@
     'name': 'Sale Discount',
     'name_ca_ES': 'Descomptes comandes de venda',
     'name_de_DE': 'Verkauf Rabatt',
+    'name_es_ES': 'Descuentos pedidos de venta',
     'version': '2.1.2',
     'author': 'virtual things',
     'email': 'info@virtual-things.biz',
@@ -20,6 +21,10 @@
     - Ermöglicht die Eingabe von Rabatten pro Verkaufsposition
     - Fügt Rabattfeld im Bericht Verkauf hinzu
 ''',
+    'description_es_ES': '''Descuentos para ventas
+    - Define descuentos para líneas de ventas
+    - Añade campo descuento al tiquet de venta
+''',
     'depends': [
         'sale',
         'account_invoice_discount'
@@ -29,6 +34,7 @@
         ],
     'translation': [
         'locale/ca_ES.po',
-        'locale/de_DE.po'
+        'locale/de_DE.po',
+        'locale/es_ES.po',
     ],
 }
