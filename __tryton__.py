@@ -2,6 +2,7 @@
 #this repository contains the full copyright notices and license terms.
 {
     'name': 'Sale Discount',
+    'name_ca_ES': 'Descomptes comandes de venda',
     'name_de_DE': 'Verkauf Rabatt',
     'version': '2.1.2',
     'author': 'virtual things',
@@ -10,6 +11,10 @@
     'description': '''Discounts for Sales
     - Define discounts for sale lines
     - Adds field discount in report sale
+''',
+    'description_ca_ES': '''Descomptes per a vendes
+    - Defineix descomptes per a línies de venda
+    - Afegeix camp descompte al tiquet de venda
 ''',
     'description_de_DE': '''Rabatt für Verkäufe
     - Ermöglicht die Eingabe von Rabatten pro Verkaufsposition
@@ -23,6 +28,7 @@
         'sale.xml'
         ],
     'translation': [
+        'locale/ca_ES.po',
         'locale/de_DE.po'
     ],
 }
