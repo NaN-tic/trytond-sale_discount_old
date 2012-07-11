@@ -34,8 +34,7 @@ setup(name='trytond_sale_discount',
     ],
     package_data={
         'trytond.modules.sale_discount': info.get('xml', []) \
-                + info.get('translation', []) \
-                + ['sale.odt',],
+                + info.get('translation', []),
     },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
