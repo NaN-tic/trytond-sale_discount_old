@@ -26,7 +26,8 @@ class SaleLine(ModelSQL, ModelView):
         return 0.0
 
     def on_change_with_amount(self, vals):
-        if vals.get('type') == 'line' and vals.get('discount'):
+        if vals.get('type') == 'line' and vals.get('unit_price') and \
+         vals.get('discount'):
             vals = vals.copy()
             vals['unit_price'] = (vals.get('unit_price') -
                 vals.get('unit_price') * vals.get('discount') * Decimal('0.01'))
@@ -66,7 +67,7 @@ class Sale(ModelSQL, ModelView):
             vals = vals.copy()
             lines = []
             for line in vals['lines']:
-                if line.get('discount'):
+                if line.get('unit_price') and line.get('discount'):
                     line['unit_price'] = (line.get('unit_price')-
                               line.get('unit_price') * line.get('discount') *
                               Decimal('0.01'))

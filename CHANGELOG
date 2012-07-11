@@ -1,3 +1,5 @@
+* on_change_lines if unit_price field is available
+* on_change_with_amount if unit_price field is available
 * Move sale.odt to sale_discount_report module
 * Add locale es_ES
 * Add locale ca_ES
