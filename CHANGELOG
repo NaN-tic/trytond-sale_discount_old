@@ -1,3 +1,5 @@
+Version 2.4.0 - 2012-07-16
+* Add discount value in move out for the sale line
 * Delete locale de_DE translations from report
 * on_change_lines if unit_price field is available
 * on_change_with_amount if unit_price field is available

@@ -5,7 +5,7 @@
     'name_ca_ES': 'Descomptes comandes de venda',
     'name_de_DE': 'Verkauf Rabatt',
     'name_es_ES': 'Descuentos pedidos de venta',
-    'version': '2.1.2',
+    'version': '2.4.0',
     'author': 'virtual things',
     'email': 'info@virtual-things.biz',
     'website': 'http://www.virtual-things.biz/',
