@@ -27,10 +27,11 @@
 ''',
     'depends': [
         'sale',
-        'account_invoice_discount'
+        'account_invoice_discount',
         ],
     'xml': [
-        'sale.xml'
+        'move.xml',
+        'sale.xml',
         ],
     'translation': [
         'locale/ca_ES.po',

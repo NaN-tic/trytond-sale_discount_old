@@ -57,6 +57,15 @@ class SaleLine(ModelSQL, ModelView):
         res[0]['discount'] = line.discount
         return [res[0]]
 
+    def get_move(self, line, shipment_type):
+        '''
+        Add discount value in move out for the sale line
+        '''
+        res = super(SaleLine, self).get_move(line, shipment_type)
+        if line.discount and shipment_type == 'out':
+            res['discount'] = line.discount
+        return res
+
 SaleLine()
 
 class Sale(ModelSQL, ModelView):
