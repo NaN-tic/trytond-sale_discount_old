@@ -3,114 +3,57 @@
 #the full copyright notices and license terms.
 import copy
 from decimal import Decimal
-from trytond.model import ModelView, ModelSQL, fields
+from trytond.model import fields
 from trytond.pyson import Not, Equal, Eval
 from trytond.transaction import Transaction
-from trytond.pool import Pool
+from trytond.pool import Pool, PoolMeta
 
+__all__ = ['SaleLine']
+__metaclass__ = PoolMeta
 
-class SaleLine(ModelSQL, ModelView):
-    _name = 'sale.line'
+class SaleLine:
+    'Sale Line'
+    __name__ = 'sale.line'
 
-    discount = fields.Numeric('Discount %', digits=(16, 2), states={
-                'invisible': Not(Equal(Eval('type'), 'line')),
-            }, depends=['type'])
+    discount = fields.Numeric('Discount %', 
+        digits=(16, Eval('currency_digits', 2)), 
+        states={
+        'invisible': Not(Equal(Eval('type'), 'line')),
+        }, on_change=['discount', 'product', 'quantity', 'type', 'unit_price'],
+        depends=['type','unit_price', 'quantity', 'amount'])
 
-    def __init__(self):
-        super(SaleLine, self).__init__()
-        self.amount = copy.copy(self.amount)
-        if self.amount.on_change_with:
-            self.amount.on_change_with.extend(['discount'])
-        self._reset_columns()
-
-    def default_discount(self):
+    @staticmethod
+    def default_discount():
         return 0.0
 
-    def on_change_with_amount(self, vals):
-        if vals.get('type') == 'line' and vals.get('unit_price') and \
-         vals.get('discount'):
-            vals = vals.copy()
-            vals['unit_price'] = (vals.get('unit_price') -
-                vals.get('unit_price') * vals.get('discount') * Decimal('0.01'))
-        return super(SaleLine, self).on_change_with_amount(vals)
-
-    def get_amount(self, ids, name):
-        currency_obj = Pool().get('currency.currency')
-        res = super(SaleLine, self).get_amount(ids, name)
-        for line in self.browse(ids):
-            if line.type == 'line':
-                currency = line.sale and line.sale.currency \
-                        or line.currency
-                res[line.id] = currency_obj.round(currency,
-                        Decimal(str(line.quantity)) * line.unit_price -
-                            (Decimal(str(line.quantity)) * line.unit_price *
-                            (line.discount * Decimal('0.01'))))
-        return res
-
-    def get_invoice_line(self, line, invoice_type):
-        res = super(SaleLine, self).get_invoice_line(line, invoice_type)
-        if not res:
-            return []
-        if line.type != 'line':
-            return [res[0]]
-        if res[0]['quantity'] <= 0.0:
-            return None
-        res[0]['discount'] = line.discount
-        return [res[0]]
-
-    def get_move(self, line, shipment_type):
-        '''
-        Add discount value in move out for the sale line
-        '''
-        res = super(SaleLine, self).get_move(line, shipment_type)
-        if line.discount and shipment_type == 'out':
-            res['discount'] = line.discount
-        return res
-
-SaleLine()
-
-class Sale(ModelSQL, ModelView):
-    _name = 'sale.sale'
-
-    def on_change_lines(self, vals):
-        if vals.get('lines'):
-            vals = vals.copy()
-            lines = []
-            for line in vals['lines']:
-                if line.get('unit_price') and line.get('discount'):
-                    line['unit_price'] = (line.get('unit_price')-
-                              line.get('unit_price') * line.get('discount') *
-                              Decimal('0.01'))
-                lines.append(line)
-            vals['lines'] = lines
-        return super(Sale, self).on_change_lines(vals)
-
-    def get_tax_amount(self, ids, name):
-        '''
-        Compute tax amount for each sales
-
-        :param sales: a BrowseRecordList of sales
-        :return: a dictionary with sale id as key and
-            tax amount as value
-        '''
-        currency_obj = Pool().get('currency.currency')
-        tax_obj = Pool().get('account.tax')
+    def on_change_discount(self):
         res = {}
-        for sale in self.browse(ids):
-            context = self.get_tax_context(sale)
-            res.setdefault(sale.id, Decimal('0.0'))
-            for line in sale.lines:
-                if line.type != 'line':
-                    continue
-                price = line.unit_price - line.unit_price * line.discount / Decimal('100')
-                # Don't round on each line to handle rounding error
-                with Transaction().set_context(**context):
-                    taxes_compute = tax_obj.compute(
-                            [t.id for t in line.taxes], price, line.quantity)
-
-                for tax in taxes_compute:
-                    res[sale.id] += tax['amount']
-            res[sale.id] = currency_obj.round(sale.currency, res[sale.id])
+        if self.discount == Decimal(0.0) and self.quantity != None:
+            res['amount'] = Decimal(self.quantity)*self.unit_price
+        if self.discount and self.unit_price and self.type == 'line':
+            res['amount'] = Decimal(self.quantity)*(self.unit_price -
+                self.unit_price * self.discount * Decimal('0.01'))
         return res
 
-Sale()
+    def on_change_product(self):
+        res = super(SaleLine, self).on_change_product()
+        res['discount'] = Decimal(0.0)
+        return res
+
+    def on_change_quantity(self):
+        res = super(SaleLine, self).on_change_quantity()
+        res['discount'] = Decimal(0.0)
+        return res
+
+    def get_amount(self, name):
+        Currency = Pool().get('currency.currency')
+        res = super(SaleLine, self).get_amount(name)
+        if self.type == 'line' and self.discount and self.discount != None:
+            currency = self.sale and self.sale.currency \
+                    or self.currency
+            res = Currency.round(currency, \
+                    Decimal(str(self.quantity)) * self.unit_price - \
+                        (Decimal(str(self.quantity)) * self.unit_price *\
+                        (self.discount * Decimal('0.01'))))
+        return res
+ 

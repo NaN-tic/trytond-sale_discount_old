@@ -2,7 +2,6 @@ trytond_sale_discount
 =====================
 
 Adds a discount field on sale order of Tryton.
-See __tryton__.py
 
 Installing
 ----------

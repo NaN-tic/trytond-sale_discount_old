@@ -1,15 +1,16 @@
 #This file is part sale_discount module for Tryton.
 #The COPYRIGHT file at the top level of this repository contains 
 #the full copyright notices and license terms.
-
-from decimal import Decimal
-from trytond.model import ModelView, ModelSQL, fields
+from trytond.model import fields
 from trytond.pyson import Not, Equal, Eval
-from trytond.transaction import Transaction
-from trytond.pool import Pool
+from trytond.pool import PoolMeta
 
-class Move(ModelSQL, ModelView):
-    _name = 'stock.move'
+__all__ = ['Move']
+__metaclass__ = PoolMeta
+
+class Move:
+    "Stock Move"
+    __name__ = 'stock.move'
 
     discount = fields.Numeric('Discount %', digits=(16, 4),
         states={
@@ -17,4 +18,3 @@ class Move(ModelSQL, ModelView):
             },
         depends=['state'])
 
-Move()
