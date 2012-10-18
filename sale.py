@@ -17,7 +17,7 @@ class Sale:
         InvoiceLine = Pool().get('account.invoice.line')
         invoices = super(Sale, self).create_invoice(invoice_type)
         for line in self.lines:
-            if line.discount != 0.0:
+            if line.discount != 0.0 and line.invoice_lines:
                 InvoiceLine.write([line.invoice_lines[0]], {
                         'discount': line.discount,
                         })
