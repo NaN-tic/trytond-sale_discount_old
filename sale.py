@@ -22,7 +22,7 @@ class SaleLine:
 
     @staticmethod
     def default_discount():
-        return 0.0
+        return Decimal(0.0)
 
     def on_change_discount(self):
         res = {}
