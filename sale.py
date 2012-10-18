@@ -6,8 +6,23 @@ from trytond.model import fields
 from trytond.pyson import Not, Equal, Eval
 from trytond.pool import Pool, PoolMeta
 
-__all__ = ['SaleLine']
+__all__ = ['Sale','SaleLine']
 __metaclass__ = PoolMeta
+
+class Sale:
+    'Sale'
+    __name__ = 'sale.sale'
+
+    def create_invoice(self, invoice_type):
+        InvoiceLine = Pool().get('account.invoice.line')
+        invoices = super(Sale, self).create_invoice(invoice_type)
+        for line in self.lines:
+            if line.discount != 0.0:
+                InvoiceLine.write([line.invoice_lines[0]], {
+                        'discount': line.discount,
+                        })
+        return invoices
+
 
 class SaleLine:
     'Sale Line'

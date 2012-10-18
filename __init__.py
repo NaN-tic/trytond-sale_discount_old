@@ -8,6 +8,7 @@ from sale import *
 
 def register():
     Pool.register(
+        Sale,
         SaleLine,
         Move,
         module='sale_discount', type_='model')
