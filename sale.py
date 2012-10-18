@@ -23,6 +23,16 @@ class Sale:
                         })
         return invoices
 
+    def create_shipment(self, shipment_type):
+        Move = Pool().get('stock.move')
+        shipments = super(Sale, self).create_shipment(shipment_type)
+        for line in self.lines:
+            if line.discount != 0.0 and line.moves:
+                Move.write([line.moves[0]], {
+                        'discount': line.discount,
+                        })
+        return shipments
+
 
 class SaleLine:
     'Sale Line'
