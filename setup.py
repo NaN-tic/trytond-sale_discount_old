@@ -35,13 +35,13 @@ setup(name='trytonzz_sale_discount',
     url='http://www.virtual-things.biz',
     download_url="http://downloads.tryton.org/" + \
             info.get('version', '0.0.1').rsplit('.', 1)[0] + '/',
-    package_dir={'trytonzz.modules.sale_discount': '.'},
+    package_dir={'trytond.modules.sale_discount': '.'},
     packages=[
-        'trytonzz.modules.sale_discount',
-        'trytonzz.modules.sale_discount.tests',
+        'trytond.modules.sale_discount',
+        'trytond.modules.sale_discount.tests',
     ],
     package_data={
-        'trytonzz.modules.sale_discount': info.get('xml', []) \
+        'trytond.modules.sale_discount': info.get('xml', []) \
             + ['tryton.cfg', 'locale/*.po'],
     },
     classifiers=[
@@ -66,9 +66,9 @@ setup(name='trytonzz_sale_discount',
     install_requires=requires,
     zip_safe=False,
     entry_points="""
-    [trytonzz.modules]
-    sale_discount = trytonzz.modules.sale_discount
+    [trytond.modules]
+    sale_discount = trytond.modules.sale_discount
     """,
     test_suite='tests',
-    test_loader='trytonzz.test_loader:Loader',
+    test_loader='trytond.test_loader:Loader',
 )
