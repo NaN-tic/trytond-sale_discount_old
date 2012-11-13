@@ -27,7 +27,7 @@ for dep in info.get('depends', []):
 requires.append('trytond >= %s.%s, < %s.%s' %
         (major_version, minor_version, major_version, minor_version + 1))
 
-setup(name='trytond_sale_discount',
+setup(name='trytonzz_sale_discount',
     version=info.get('version', '0.0.1'),
     description='Tryton module for discount in sales',
     author='Virtual Things',
@@ -35,13 +35,13 @@ setup(name='trytond_sale_discount',
     url='http://www.virtual-things.biz',
     download_url="http://downloads.tryton.org/" + \
             info.get('version', '0.0.1').rsplit('.', 1)[0] + '/',
-    package_dir={'trytond.modules.sale_discount': '.'},
+    package_dir={'trytonzz.modules.sale_discount': '.'},
     packages=[
-        'trytond.modules.sale_discount',
-        'trytond.modules.sale_discount.tests',
+        'trytonzz.modules.sale_discount',
+        'trytonzz.modules.sale_discount.tests',
     ],
     package_data={
-        'trytond.modules.sale_discount': info.get('xml', []) \
+        'trytonzz.modules.sale_discount': info.get('xml', []) \
             + ['tryton.cfg', 'locale/*.po'],
     },
     classifiers=[
@@ -66,9 +66,9 @@ setup(name='trytond_sale_discount',
     install_requires=requires,
     zip_safe=False,
     entry_points="""
-    [trytond.modules]
-    sale_discount = trytond.modules.sale_discount
+    [trytonzz.modules]
+    sale_discount = trytonzz.modules.sale_discount
     """,
     test_suite='tests',
-    test_loader='trytond.test_loader:Loader',
+    test_loader='trytonzz.test_loader:Loader',
 )
