@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #This file is part sale_discount module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 
 from setuptools import setup
@@ -33,8 +33,7 @@ setup(name='trytonzz_sale_discount',
     author='Virtual Things',
     author_email='info@virtual-things.biz',
     url='http://www.virtual-things.biz',
-    download_url="http://downloads.tryton.org/" + \
-            info.get('version', '0.0.1').rsplit('.', 1)[0] + '/',
+    download_url='https://bitbucket.org/zikzakmedia/trytond-sale_discount',
     package_dir={'trytond.modules.sale_discount': '.'},
     packages=[
         'trytond.modules.sale_discount',
