@@ -52,12 +52,10 @@ class SaleLine:
 
     def on_change_discount(self):
         res = {}
-        if self.discount == Decimal(0.0) and self.quantity is not None:
-            res['amount'] = Decimal(self.quantity) * self.unit_price
-        if self.discount and self.unit_price and self.type == 'line' \
-            and self.quantity is not None:
-                res['amount'] = Decimal(self.quantity) * (self.unit_price -
-                    self.unit_price * self.discount * Decimal('0.01'))
+        if self.quantity and self.discount and self.unit_price \
+            and self.type == 'line':
+            res['unit_price'] = (self.unit_price -
+                self.unit_price * self.discount * Decimal('0.01'))
         return res
 
     def on_change_product(self):
@@ -68,16 +66,4 @@ class SaleLine:
     def on_change_quantity(self):
         res = super(SaleLine, self).on_change_quantity()
         res['discount'] = Decimal(0.0)
-        return res
-
-    def get_amount(self, name):
-        Currency = Pool().get('currency.currency')
-        res = super(SaleLine, self).get_amount(name)
-        if self.type == 'line' and self.discount and self.discount is not None:
-            currency = self.sale and self.sale.currency \
-                    or self.currency
-            res = Currency.round(currency,
-                Decimal(str(self.quantity)) * self.unit_price -
-                (Decimal(str(self.quantity)) * self.unit_price *
-                (self.discount * Decimal('0.01'))))
         return res
