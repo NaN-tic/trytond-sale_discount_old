@@ -44,6 +44,8 @@ The COPYRIGHT file at the top level of this repository contains the full copyrig
                         position="before">
                         <label name="discount"/>
                         <field name="discount"/>
+                        <label name="product_unit_price"/>
+                        <field name="product_unit_price"/>
                     </xpath>
                 </data>
                 ]]>

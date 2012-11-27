@@ -45,6 +45,11 @@ class SaleLine:
         'invisible': Not(Equal(Eval('type'), 'line')),
         }, on_change=['discount', 'product', 'quantity', 'type', 'unit_price'],
         depends=['type', 'unit_price', 'quantity', 'amount'])
+    product_unit_price = fields.Function(fields.Numeric('Product Unit Price',
+        digits=(16, 4), states={
+            'invisible': Eval('type') != 'line',
+        }, on_change_with=['type', '_parent_sale.currency'],
+        depends=['type']), 'get_product_unit_price')
 
     @staticmethod
     def default_discount():
@@ -61,9 +66,22 @@ class SaleLine:
     def on_change_product(self):
         res = super(SaleLine, self).on_change_product()
         res['discount'] = Decimal(0.0)
+        res['product_unit_price'] = self.on_change_with_product_unit_price()
         return res
 
     def on_change_quantity(self):
         res = super(SaleLine, self).on_change_quantity()
         res['discount'] = Decimal(0.0)
         return res
+
+    def on_change_with_product_unit_price(self):
+        if self.type == 'line' and self.product:
+            Product = Pool().get('product.product')
+            return Product.get_sale_price([self.product], 1)[self.product.id]
+        return Decimal('0.0')
+
+    def get_product_unit_price(self, name):
+        if self.type == 'line' and self.product:
+            Product = Pool().get('product.product')
+            return Product.get_sale_price([self.product], 1)[self.product.id]
+        return Decimal('0.0')
