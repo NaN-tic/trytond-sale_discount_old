@@ -6,6 +6,10 @@ msgctxt "field:sale.line,discount:"
 msgid "Discount %"
 msgstr "Descuento %"
 
+msgctxt "field:sale.line,product_unit_price:"
+msgid "Product Unit Price"
+msgstr "Precio unidad producto"
+
 msgctxt "field:stock.move,discount:"
 msgid "Discount %"
 msgstr "Descuento %"
