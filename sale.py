@@ -78,10 +78,10 @@ class SaleLine:
         if self.type == 'line' and self.product:
             Product = Pool().get('product.product')
             return Product.get_sale_price([self.product], 1)[self.product.id]
-        return Decimal('0.0')
+        return self.unit_price
 
     def get_product_unit_price(self, name):
         if self.type == 'line' and self.product:
             Product = Pool().get('product.product')
             return Product.get_sale_price([self.product], 1)[self.product.id]
-        return Decimal('0.0')
+        return self.unit_price
