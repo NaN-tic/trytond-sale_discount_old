@@ -10,8 +10,8 @@ Descuentos en ventas
 El descuento se aplica al *Precio Unidad* y este se recalcula a partir del
 descuento.
 
-Módulos que dependen
-====================
+Módulos de los que depende
+==========================
 
 Instalados
 ----------
