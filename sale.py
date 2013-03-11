@@ -89,8 +89,8 @@ class SaleLine:
         res = {}
         if self.quantity and self.discount and self.unit_price \
             and self.type == 'line':
-            res['unit_price'] = (self.unit_price -
-                self.unit_price * self.discount * Decimal('0.01'))
+            res['amount'] = Decimal(str(self.quantity)) * (self.unit_price - (
+                self.unit_price * self.discount * Decimal('0.01')))
         return res
 
     def on_change_product(self):
