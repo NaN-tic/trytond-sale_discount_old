@@ -5,6 +5,7 @@ from decimal import Decimal
 from trytond.model import fields
 from trytond.pyson import Not, Equal, Eval
 from trytond.pool import Pool, PoolMeta
+from trytond.transaction import Transaction
 
 __all__ = ['Sale', 'SaleLine']
 __metaclass__ = PoolMeta
@@ -34,6 +35,40 @@ class Sale:
                         })
         return shipments
 
+    def get_tax_amount(self, name):
+        '''
+        Get taxes unit_price - discount
+        '''
+        pool = Pool()
+        Tax = pool.get('account.tax')
+        Invoice = pool.get('account.invoice')
+
+        if (self.state in self._states_cached
+                and self.tax_amount_cache is not None):
+            return self.tax_amount_cache
+        context = self.get_tax_context()
+        taxes = {}
+        for line in self.lines:
+            if line.type != 'line':
+                continue
+            unit_price = line.unit_price
+            if line.discount and line.discount is not None:
+                unit_price =  unit_price - (
+                    line.unit_price * (line.discount * Decimal('0.01')))
+            with Transaction().set_context(context):
+                tax_list = Tax.compute(line.taxes, unit_price,
+                    line.quantity)
+            # Don't round on each line to handle rounding error
+            for tax in tax_list:
+                key, val = Invoice._compute_tax(tax, 'out_invoice')
+                if not key in taxes:
+                    taxes[key] = val['amount']
+                else:
+                    taxes[key] += val['amount']
+        amount = sum((self.currency.round(taxes[key]) for key in taxes),
+            Decimal(0))
+        return self.currency.round(amount)
+
 
 class SaleLine:
     'Sale Line'
@@ -45,11 +80,6 @@ class SaleLine:
         'invisible': Not(Equal(Eval('type'), 'line')),
         }, on_change=['discount', 'product', 'quantity', 'type', 'unit_price'],
         depends=['type', 'unit_price', 'quantity', 'amount'])
-    product_unit_price = fields.Function(fields.Numeric('Product Unit Price',
-        digits=(16, 4), states={
-            'invisible': Eval('type') != 'line',
-        }, on_change_with=['type', '_parent_sale.currency'],
-        depends=['type']), 'get_product_unit_price')
 
     @staticmethod
     def default_discount():
@@ -80,8 +110,14 @@ class SaleLine:
             return Product.get_sale_price([self.product], 1)[self.product.id]
         return self.unit_price
 
-    def get_product_unit_price(self, name):
-        if self.type == 'line' and self.product:
-            Product = Pool().get('product.product')
-            return Product.get_sale_price([self.product], 1)[self.product.id]
-        return self.unit_price
+    def get_amount(self, name):
+        Currency = Pool().get('currency.currency')
+        res = super(SaleLine, self).get_amount(name)
+        if self.type == 'line' and self.discount and self.discount is not None:
+            currency = self.sale and self.sale.currency \
+                    or self.currency
+            res = Currency.round(currency,
+                Decimal(str(self.quantity)) * self.unit_price -
+                (Decimal(str(self.quantity)) * self.unit_price *
+                (self.discount * Decimal('0.01'))))
+        return res
