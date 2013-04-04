@@ -79,7 +79,7 @@ class SaleLine:
         states={
         'invisible': Not(Equal(Eval('type'), 'line')),
         }, on_change=['discount', 'product', 'quantity', 'type', 'unit_price'],
-        depends=['type', 'unit_price', 'quantity', 'amount'])
+        depends=['type', 'unit_price', 'quantity', 'amount', 'currency_digits'])
 
     @staticmethod
     def default_discount():
