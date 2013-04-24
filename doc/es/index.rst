@@ -9,25 +9,3 @@ Descuentos en ventas
 
 El descuento se aplica al *Precio Unidad* y este se recalcula a partir del
 descuento.
-
-Módulos de los que depende
-==========================
-
-Instalados
-----------
-
-.. toctree::
-   :maxdepth: 1
-
-   /account_invoice_discount/index
-   /sale/index
-
-Dependencias
-------------
-
-* `Descuento en facturación`_
-* Ventas_
-
-.. _Descuento en facturación: ../account_invoice_discount/index.html
-.. _Ventas: ../sale/index.html
- 
