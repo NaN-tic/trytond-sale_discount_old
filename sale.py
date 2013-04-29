@@ -73,13 +73,11 @@ class Sale:
 class SaleLine:
     'Sale Line'
     __name__ = 'sale.line'
-
-    discount = fields.Numeric('Discount %',
-        digits=(16, Eval('currency_digits', 2)),
+    discount = fields.Numeric('Discount %', digits=(16, 4),
         states={
-        'invisible': Not(Equal(Eval('type'), 'line')),
+            'invisible': Not(Equal(Eval('type'), 'line')),
         }, on_change=['discount', 'product', 'quantity', 'type', 'unit_price'],
-        depends=['type', 'unit_price', 'quantity', 'amount', 'currency_digits'])
+        depends=['type', 'unit_price', 'quantity', 'amount'])
 
     @staticmethod
     def default_discount():
