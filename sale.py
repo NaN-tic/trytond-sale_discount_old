@@ -66,7 +66,7 @@ class Sale:
                 else:
                     taxes[key] += val['amount']
         amount = sum((self.currency.round(taxes[key]) for key in taxes),
-            Decimal(0))
+            Decimal('0'))
         return self.currency.round(amount)
 
 
@@ -81,7 +81,7 @@ class SaleLine:
 
     @staticmethod
     def default_discount():
-        return Decimal(0.0)
+        return Decimal('0.0')
 
     def on_change_discount(self):
         res = {}
@@ -93,13 +93,13 @@ class SaleLine:
 
     def on_change_product(self):
         res = super(SaleLine, self).on_change_product()
-        res['discount'] = Decimal(0.0)
+        res['discount'] = Decimal('0.0')
         res['product_unit_price'] = self.on_change_with_product_unit_price()
         return res
 
     def on_change_quantity(self):
         res = super(SaleLine, self).on_change_quantity()
-        res['discount'] = Decimal(0.0)
+        res['discount'] = Decimal('0.0')
         return res
 
     def on_change_with_product_unit_price(self):
