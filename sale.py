@@ -35,7 +35,7 @@ class Sale:
                         })
         return shipments
 
-    def get_tax_amount(self):
+    def get_tax_amount(self, name):
         '''
         Get taxes unit_price - discount
         '''
@@ -94,7 +94,7 @@ class SaleLine:
     def on_change_product(self):
         res = super(SaleLine, self).on_change_product()
         res['discount'] = Decimal('0.0')
-        res['product_unit_price'] = self.on_change_with_product_unit_price()
+        res['unit_price'] = self.on_change_with_product_unit_price()
         return res
 
     def on_change_quantity(self):
