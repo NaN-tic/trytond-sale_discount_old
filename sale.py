@@ -35,7 +35,7 @@ class Sale:
                         })
         return shipments
 
-    def get_tax_amount(self, name):
+    def get_tax_amount(self):
         '''
         Get taxes unit_price - discount
         '''
